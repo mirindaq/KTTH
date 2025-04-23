@@ -6,7 +6,6 @@ import ProductTable from "./pages/ProductTable";
 
 function App() {
   const [count, setCount] = useState(0);
-
   return (
     <>
       <ProductTable  />

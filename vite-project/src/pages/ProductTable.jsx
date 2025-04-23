@@ -1,3 +1,4 @@
+// ProductTable.jsx
 import React, { useState, useEffect } from "react";
 import ProductItem from "../components/ProductItem";
 
@@ -49,6 +50,7 @@ const ProductTable = () => {
   const [searchTerm, setSearchTerm] = useState(""); // Từ khóa tìm kiếm theo tên
   const [categoryFilter, setCategoryFilter] = useState(""); // Lọc theo danh mục
   const [filteredProducts, setFilteredProducts] = useState(products); // Sản phẩm đã lọc
+  const [showModal, setShowModal] = useState(false); // Hiển thị modal thêm sản phẩm
 
   // Hàm thay đổi khi người dùng nhập vào ô tìm kiếm tên
   const handleSearchChange = (e) => {
@@ -121,6 +123,7 @@ const ProductTable = () => {
     };
 
     setProducts((prev) => [...prev, newProduct]);
+    setShowModal(false); // Đóng modal sau khi thêm sản phẩm
 
     setFormData({
       name: "",
@@ -149,99 +152,49 @@ const ProductTable = () => {
   );
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-xl font-bold mb-4">Quản lý sản phẩm</h1>
+    <div className="p-6 max-w-6xl mx-auto">
+      <h1 className="text-2xl font-semibold text-center mb-8">
+        Quản lý sản phẩm
+      </h1>
 
-      {/* Tìm kiếm theo tên */}
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Tìm sản phẩm theo tên"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="border px-3 py-2 rounded-md w-full"
-        />
-      </div>
+      <div className="flex justify-between mb-6">
+        <div className="flex space-x-4">
+          <input
+            type="text"
+            placeholder="Tìm sản phẩm theo tên"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="border border-gray-300 rounded-md px-4 py-2 w-80"
+          />
+          <select
+            value={categoryFilter}
+            onChange={handleCategoryChange}
+            className="border border-gray-300 rounded-md px-4 py-2"
+          >
+            <option value="">Tất cả</option>
+            <option value="Thời trang">Thời trang</option>
+            <option value="Điện tử">Điện tử</option>
+            <option value="Gia dụng">Gia dụng</option>
+          </select>
+        </div>
 
-      {/* Lọc theo danh mục */}
-      <div className="mb-6">
-        <label htmlFor="categoryFilter" className="block mb-2 font-medium">
-          Lọc theo danh mục
-        </label>
-        <select
-          id="categoryFilter"
-          value={categoryFilter}
-          onChange={handleCategoryChange}
-          className="border px-3 py-2 rounded-md w-full"
+        <button
+          onClick={() => setShowModal(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
         >
-          <option value="">Tất cả</option>
-          <option value="Thời trang">Thời trang</option>
-          <option value="Điện tử">Điện tử</option>
-          <option value="Gia dụng">Gia dụng</option>
-        </select>
+          Thêm sản phẩm
+        </button>
       </div>
 
-      {/* Form thêm sản phẩm */}
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
-        <input
-          type="text"
-          name="name"
-          placeholder="Tên sản phẩm"
-          value={formData.name}
-          onChange={handleChange}
-          className="border px-3 py-2 rounded-md"
-        />
-        <input
-          type="number"
-          name="price"
-          placeholder="Giá"
-          value={formData.price}
-          onChange={handleChange}
-          className="border px-3 py-2 rounded-md"
-        />
-        <input
-          type="text"
-          name="category"
-          placeholder="Danh mục"
-          value={formData.category}
-          onChange={handleChange}
-          className="border px-3 py-2 rounded-md"
-        />
-        <input
-          type="number"
-          name="stock"
-          placeholder="Tồn kho"
-          value={formData.stock}
-          onChange={handleChange}
-          className="border px-3 py-2 rounded-md"
-        />
-        <input
-          type="text"
-          name="image"
-          placeholder="Link hình"
-          value={formData.image}
-          onChange={handleChange}
-          className="border px-3 py-2 rounded-md"
-        />
-      </div>
-
-      <button
-        onClick={handleAddProduct}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mb-6 transition"
-      >
-        Thêm sản phẩm
-      </button>
-
-      {/* Bảng sản phẩm */}
-      <table className="table-auto w-full border-collapse border border-gray-300">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border px-4 py-2">Ảnh</th>
-            <th className="border px-4 py-2">Tên</th>
-            <th className="border px-4 py-2">Giá</th>
-            <th className="border px-4 py-2">Danh mục</th>
-            <th className="border px-4 py-2">Tồn kho</th>
-            <th className="border px-4 py-2">Hành động</th>
+      <table className="table-auto w-full border-collapse border border-gray-300 shadow-md">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="px-4 py-2">Ảnh</th>
+            <th className="px-4 py-2">Tên</th>
+            <th className="px-4 py-2">Giá</th>
+            <th className="px-4 py-2">Danh mục</th>
+            <th className="px-4 py-2">Tồn kho</th>
+            <th className="px-4 py-2">Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -255,7 +208,7 @@ const ProductTable = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="6" className="border px-4 py-2 text-center">
+              <td colSpan="6" className="px-4 py-2 text-center text-gray-500">
                 Không tìm thấy sản phẩm
               </td>
             </tr>
@@ -263,13 +216,84 @@ const ProductTable = () => {
         </tbody>
       </table>
 
-      {/* Hiển thị tổng số sản phẩm và tổng tồn kho */}
-      <div className="mt-6">
-        <p className="font-semibold">
-          Tổng sản phẩm: {filteredProducts.length} | Tổng tồn kho:{" "}
-          {filteredProducts.reduce((acc, product) => acc + product.stock, 0)}
+      <div className="mt-6 text-center">
+        <p className="text-lg font-semibold">
+          Tổng sản phẩm: {totalProducts} | Tổng tồn kho: {totalStock}
         </p>
       </div>
+
+      {/* Modal Thêm sản phẩm */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-8 rounded-lg w-96">
+            <h2 className="text-xl font-semibold mb-4">Thêm sản phẩm</h2>
+            <div className="mb-4">
+              <input
+                type="text"
+                name="name"
+                placeholder="Tên sản phẩm"
+                value={formData.name}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-md px-4 py-2 w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <input
+                type="number"
+                name="price"
+                placeholder="Giá"
+                value={formData.price}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-md px-4 py-2 w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <input
+                type="text"
+                name="category"
+                placeholder="Danh mục"
+                value={formData.category}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-md px-4 py-2 w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <input
+                type="number"
+                name="stock"
+                placeholder="Tồn kho"
+                value={formData.stock}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-md px-4 py-2 w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <input
+                type="text"
+                name="image"
+                placeholder="Link hình"
+                value={formData.image}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-md px-4 py-2 w-full"
+              />
+            </div>
+            <div className="flex justify-between">
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-500 px-4 py-2 border border-gray-300 rounded-md"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleAddProduct}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              >
+                Thêm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
