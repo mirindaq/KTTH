@@ -36,8 +36,8 @@ const ProductTable = ({ products, setProducts }) => {
 
     // Lọc theo danh mục
     if (categoryFilter) {
-      filtered = filtered.filter((product) =>
-        product.category === categoryFilter
+      filtered = filtered.filter(
+        (product) => product.category === categoryFilter
       );
     }
 
@@ -99,10 +99,16 @@ const ProductTable = ({ products, setProducts }) => {
     }
   };
 
+  // Tính tổng số sản phẩm và tổng tồn kho
+  const totalProducts = filteredProducts.length;
+  const totalStock = filteredProducts.reduce(
+    (acc, product) => acc + product.stock,
+    0
+  );
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-xl font-bold mb-4">Quản lý sản phẩm</h1>
-
       {/* Tìm kiếm theo tên */}
       <div className="mb-6">
         <input
@@ -113,7 +119,6 @@ const ProductTable = ({ products, setProducts }) => {
           className="border px-3 py-2 rounded-md w-full"
         />
       </div>
-
       {/* Lọc theo danh mục */}
       <div className="mb-6">
         <label htmlFor="categoryFilter" className="block mb-2 font-medium">
@@ -132,7 +137,6 @@ const ProductTable = ({ products, setProducts }) => {
           {/* Thêm các danh mục khác nếu cần */}
         </select>
       </div>
-
       {/* Form thêm sản phẩm */}
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
         <input
@@ -176,14 +180,12 @@ const ProductTable = ({ products, setProducts }) => {
           className="border px-3 py-2 rounded-md"
         />
       </div>
-
       <button
         onClick={handleAddProduct}
         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mb-6 transition"
       >
         Thêm sản phẩm
       </button>
-
       {/* Bảng sản phẩm */}
       <table className="table-auto w-full border-collapse border border-gray-300">
         <thead>
@@ -240,6 +242,12 @@ const ProductTable = ({ products, setProducts }) => {
           )}
         </tbody>
       </table>
+      {/* Hiển thị tổng số sản phẩm và tổng tồn kho */}
+      <div className="mt-6">
+        <p className="font-semibold">
+          Tổng sản phẩm: {totalProducts} | Tổng tồn kho: {totalStock}{" "}
+        </p>{" "}
+      </div>{" "}
     </div>
   );
 };
