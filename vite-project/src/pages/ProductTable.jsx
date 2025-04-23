@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const ProductTable = ({ products, setProducts }) => {
   const [formData, setFormData] = useState({
@@ -9,13 +9,45 @@ const ProductTable = ({ products, setProducts }) => {
     image: "",
   });
 
-  const [searchTerm, setSearchTerm] = useState(""); // Thêm state cho ô tìm kiếm
-  const [filteredProducts, setFilteredProducts] = useState(products); // State chứa sản phẩm đã lọc
+  const [searchTerm, setSearchTerm] = useState(""); // Từ khóa tìm kiếm theo tên
+  const [categoryFilter, setCategoryFilter] = useState(""); // Lọc theo danh mục
+  const [filteredProducts, setFilteredProducts] = useState(products); // Sản phẩm đã lọc
 
-  // Hàm thay đổi input khi tìm kiếm
+  // Hàm thay đổi khi người dùng nhập vào ô tìm kiếm tên
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value); // Lưu từ khóa tìm kiếm
+    setSearchTerm(e.target.value); // Cập nhật từ khóa tìm kiếm theo tên
   };
+
+  // Hàm thay đổi khi người dùng chọn danh mục
+  const handleCategoryChange = (e) => {
+    setCategoryFilter(e.target.value); // Cập nhật danh mục đã chọn
+  };
+
+  // Hàm để lọc sản phẩm theo tên và danh mục
+  const filterProducts = () => {
+    let filtered = products;
+
+    // Lọc theo tên (không phân biệt hoa thường)
+    if (searchTerm) {
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Lọc theo danh mục
+    if (categoryFilter) {
+      filtered = filtered.filter((product) =>
+        product.category === categoryFilter
+      );
+    }
+
+    setFilteredProducts(filtered); // Cập nhật danh sách sản phẩm đã lọc
+  };
+
+  // Sử dụng useEffect để tự động gọi filter mỗi khi thay đổi tìm kiếm hoặc danh mục
+  useEffect(() => {
+    filterProducts(); // Mỗi khi `searchTerm` hoặc `categoryFilter` thay đổi, gọi lại hàm lọc
+  }, [searchTerm, categoryFilter, products]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,39 +99,41 @@ const ProductTable = ({ products, setProducts }) => {
     }
   };
 
-  // Hàm tìm kiếm khi nhấn nút "Tìm kiếm"
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const filtered = products.filter(
-      (product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()) // Tìm kiếm không phân biệt hoa thường
-    );
-    setFilteredProducts(filtered);
-  };
-
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-xl font-bold mb-4">Quản lý sản phẩm</h1>
 
-      {/* Ô tìm kiếm */}
-      <form onSubmit={handleSearch}>
-        <div className="mb-6 flex gap-4">
-          <input
-            type="text"
-            placeholder="Tìm sản phẩm theo tên"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="border px-3 py-2 rounded-md w-4/5"
-          />
-          <button
-            onClick={handleSearch} // Gọi hàm tìm kiếm khi nhấn nút
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-          >
-            Tìm kiếm
-          </button>
-        </div>
-      </form>
+      {/* Tìm kiếm theo tên */}
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Tìm sản phẩm theo tên"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="border px-3 py-2 rounded-md w-full"
+        />
+      </div>
 
-      {/* Form */}
+      {/* Lọc theo danh mục */}
+      <div className="mb-6">
+        <label htmlFor="categoryFilter" className="block mb-2 font-medium">
+          Lọc theo danh mục
+        </label>
+        <select
+          id="categoryFilter"
+          value={categoryFilter}
+          onChange={handleCategoryChange}
+          className="border px-3 py-2 rounded-md w-full"
+        >
+          <option value="">Tất cả</option>
+          <option value="Thời trang">Thời trang</option>
+          <option value="Điện tử">Điện tử</option>
+          <option value="Gia dụng">Gia dụng</option>
+          {/* Thêm các danh mục khác nếu cần */}
+        </select>
+      </div>
+
+      {/* Form thêm sản phẩm */}
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
         <input
           type="text"
@@ -136,7 +170,7 @@ const ProductTable = ({ products, setProducts }) => {
         <input
           type="text"
           name="image"
-          placeholder="Link hinh"
+          placeholder="Link hình"
           value={formData.image}
           onChange={handleChange}
           className="border px-3 py-2 rounded-md"
